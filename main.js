@@ -10,23 +10,20 @@ const createTextNode = (text) => {
   }
 }
 
-const element = {
-}
-
 const createElement = (type, props,...children) => {
   return {
     type,
     props: {
       ...props,
-      children
+      children: children.map(child => {
+        return typeof child === 'string' ? createTextNode(child): createElement(child)
+      })
     }
   }
 }
 
 
-
 // 使用 native dom 来渲染创建好的数据结构
-
 
 const render = (el, container) => {
   // 创建元素的type
@@ -44,6 +41,15 @@ const render = (el, container) => {
 }
 
 const container = document.getElementById("root")
-const App = createElement('div', {id: 'app'}, createTextNode('hello App'))
+const App = createElement('div', {id: 'app'}, 'helloApp', '-man')
 console.log("App", App)
-render(App, container)
+
+const ReactDom = (container) => {
+  return {
+    render: (App) => {
+      render(App, container)
+    }
+  }
+}
+
+ReactDom(container).render(App)
