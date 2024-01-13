@@ -5,7 +5,7 @@ import ReactDom from "./core/ReactDom"
 // 使用 native dom 来渲染创建好的数据结构
 
 const container = document.getElementById("root")
-const App = React.createElement('div', {id: 'app'}, 'helloApp', '-man')
+const App = <div id='app'>hello app</div>
 console.log("App", App)
 
 ReactDom(container).render(App)
