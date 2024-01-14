@@ -20,12 +20,12 @@ const createElement = (type, props, ...children) => {
   }
 }
 
-let nextUnitOfWork = null
+let newFiber = null
 function workLoop(deadline) {
   let shouldYield = false
-  while(!shouldYield && nextUnitOfWork) {
+  while(!shouldYield && newFiber) {
     // 执行完当前任务，需要返回下一个任务
-    nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
+    newFiber = performUnitOfWork(newFiber)
     shouldYield = deadline.timeRemaining() < 1
   }
   requestIdleCallback(workLoop)
@@ -42,7 +42,7 @@ function initChildren(work) {
   const children = work.props.children
   let prevChild = null
   children.forEach((child, index) => {
-    const newUnitOfWork = {
+    const newFiber = {
       type: child.type,
       props: child.props,
       child: null,
@@ -51,46 +51,46 @@ function initChildren(work) {
       dom: null
     }
     if (index === 0) {
-      work.child = newUnitOfWork
+      work.child = newFiber
     } else {
-      prevChild.sibling = newUnitOfWork
+      prevChild.sibling = newFiber
     }
-    prevChild = newUnitOfWork
+    prevChild = newFiber
   })
 }
 
-function updateProps(work, dom) {
-  Object.keys(work.props).forEach(key => {
+function updateProps(props, dom) {
+  Object.keys(props).forEach(key => {
     if (key !== 'children') {
-      dom[key] = work.props[key]
+      dom[key] = props[key]
     }
   })
 }
 
-function performUnitOfWork(work) {
-  if(!work.dom) {
-    const dom = (work.dom = createDom(work.type))
+function performUnitOfWork(fiber) {
+  if(!fiber.dom) {
+    const dom = (fiber.dom = createDom(fiber.type))
     // 2 处理 props
     // // 设置 props
-    updateProps(work, dom)
-    work.parent.dom.append(dom)
+    updateProps(fiber.props, dom)
+    fiber.parent.dom.append(dom)
   }
   // 3 转换tree为链表，设置好指针
-  initChildren(work)
+  initChildren(fiber)
 
   // 4 返回下一个要执行的任务
-  if(work.child) {
-    return work.child
+  if(fiber.child) {
+    return fiber.child
   }
-  if(work.sibling ) {
-    return work.sibling
+  if(fiber.sibling ) {
+    return fiber.sibling
   }
-  return work.parent?.sibling
+  return fiber.parent?.sibling
 }
 
 
 const render = (el, container) => {
-  nextUnitOfWork = {
+  newFiber = {
     dom: container,
     props: {
       children: [el]
