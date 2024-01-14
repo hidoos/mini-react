@@ -61,7 +61,15 @@ function performUnitOfWork(work) {
      }
      prevChild = newUnitOfWork
   })
+
   // 4 返回下一个要执行的任务
+  if(work.child) {
+    return work.child
+  }
+  if(work.sibling ) {
+    return work.sibling
+  }
+  return work.parent?.sibling
 }
 
 
