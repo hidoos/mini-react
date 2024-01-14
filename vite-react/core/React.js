@@ -23,7 +23,7 @@ const createElement = (type, props, ...children) => {
 let nextUnitOfWork = null
 function workLoop(deadline) {
   let shouldYield = false
-  while(!shouldYield) {
+  while(!shouldYield && nextUnitOfWork) {
     // 执行完当前任务，需要返回下一个任务
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
     shouldYield = deadline.timeRemaining() < 1
@@ -33,18 +33,25 @@ function workLoop(deadline) {
 
 function performUnitOfWork(work) {
   // 1 创建dom
-  work.dom = el.type === 'TEXT_ELEMENT' ? document.createTextNode(''): document.createElement(el.type)
-  const dom = work.dom
-  // 2 处理 props
-  // // 设置 props
-  Object.keys(el.props).forEach(key => {
-    if(key !== 'children') {
-      dom[key] = el.props[key]
-    }
-  })
+  if(!work.dom) {
+    const dom = (work.dom = 
+      work.type === 'TEXT_ELEMENT' 
+      ? document.createTextNode('')
+      : document.createElement(work.type))
+    // 2 处理 props
+    // // 设置 props
+    Object.keys(work.props).forEach(key => {
+      if(key !== 'children') {
+        dom[key] = work.props[key]
+      }
+    })
+    work.parent.dom.append(dom)
+  }
+
+
   // 3 转换tree为链表，设置好指针
   const children = work.props.children
-  const prevChild = null
+  let prevChild = null
   children.forEach((child, index) => {
     const newUnitOfWork= {
       type: child.type,
@@ -75,18 +82,11 @@ function performUnitOfWork(work) {
 
 const render = (el, container) => {
   nextUnitOfWork = {
-
+    dom: container,
+    props: {
+      children: [el]
+    }
   }
-
-
-
-
-  // // 创建 children，递归渲染
-  // const children = el.props.children
-  // children.forEach((child) => {
-  //   render(child, dom)
-  // })
-  // container.append(dom)
 }
 
 requestIdleCallback(workLoop)
