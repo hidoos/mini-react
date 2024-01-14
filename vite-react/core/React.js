@@ -43,6 +43,24 @@ function performUnitOfWork(work) {
     }
   })
   // 3 转换tree为链表，设置好指针
+  const children = work.props.children
+  const prevChild = null
+  children.forEach((child, index) => {
+    const newUnitOfWork= {
+      type: child.type,
+      props: child.props,
+      child: null,
+      parent: work,
+      sibling: null,
+      dom: null
+    }
+     if(index === 0) {
+      work.child = newUnitOfWork
+     } else {
+      prevChild.sibling = newUnitOfWork
+     }
+     prevChild = newUnitOfWork
+  })
   // 4 返回下一个要执行的任务
 }
 
