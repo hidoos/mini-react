@@ -31,29 +31,18 @@ function workLoop(deadline) {
   requestIdleCallback(workLoop)
 }
 
-function performUnitOfWork(work) {
-  // 1 创建dom
-  if(!work.dom) {
-    const dom = (work.dom = 
-      work.type === 'TEXT_ELEMENT' 
-      ? document.createTextNode('')
-      : document.createElement(work.type))
-    // 2 处理 props
-    // // 设置 props
-    Object.keys(work.props).forEach(key => {
-      if(key !== 'children') {
-        dom[key] = work.props[key]
-      }
-    })
-    work.parent.dom.append(dom)
-  }
 
+function createDom(type) {
+  return type === 'TEXT_ELEMENT'
+    ? document.createTextNode('')
+    : document.createElement(type)
+}
 
-  // 3 转换tree为链表，设置好指针
+function initChildren(work) {
   const children = work.props.children
   let prevChild = null
   children.forEach((child, index) => {
-    const newUnitOfWork= {
+    const newUnitOfWork = {
       type: child.type,
       props: child.props,
       child: null,
@@ -61,13 +50,33 @@ function performUnitOfWork(work) {
       sibling: null,
       dom: null
     }
-     if(index === 0) {
+    if (index === 0) {
       work.child = newUnitOfWork
-     } else {
+    } else {
       prevChild.sibling = newUnitOfWork
-     }
-     prevChild = newUnitOfWork
+    }
+    prevChild = newUnitOfWork
   })
+}
+
+function updateProps(work, dom) {
+  Object.keys(work.props).forEach(key => {
+    if (key !== 'children') {
+      dom[key] = work.props[key]
+    }
+  })
+}
+
+function performUnitOfWork(work) {
+  if(!work.dom) {
+    const dom = (work.dom = createDom(work.type))
+    // 2 处理 props
+    // // 设置 props
+    updateProps(work, dom)
+    work.parent.dom.append(dom)
+  }
+  // 3 转换tree为链表，设置好指针
+  initChildren(work)
 
   // 4 返回下一个要执行的任务
   if(work.child) {
@@ -97,3 +106,5 @@ const React = {
 }
 
 export default React
+
+
