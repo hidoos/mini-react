@@ -14,7 +14,7 @@ const createElement = (type, props,...children) => {
     props: {
       ...props,
       children: children.map(child => {
-        return typeof child === 'string' ? createTextNode(child): createElement(child)
+        return typeof child === 'string' ? createTextNode(child): child
       })
     }
   }

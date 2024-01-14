@@ -8,13 +8,13 @@ const createTextNode = (text) => {
   }
 }
 
-const createElement = (type, props,...children) => {
+const createElement = (type, props, ...children) => {
   return {
     type,
     props: {
       ...props,
       children: children.map(child => {
-        return typeof child === 'string' ? createTextNode(child): createElement(child)
+        return typeof child === 'string' ? createTextNode(child): child
       })
     }
   }
