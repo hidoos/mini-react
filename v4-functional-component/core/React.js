@@ -52,25 +52,25 @@ function commitWork(fiber) {
 
 
 function createDom(type) {
+  // console.log('type', type); 
   return type === 'TEXT_ELEMENT'
     ? document.createTextNode('')
     : document.createElement(type)
 }
 
-function initChildren(work) {
-  const children = work.props.children
+function initChildren(fiber, children) {
   let prevChild = null
   children.forEach((child, index) => {
     const newFiber = {
       type: child.type,
       props: child.props,
       child: null,
-      parent: work,
+      parent: fiber,
       sibling: null,
       dom: null
     }
     if (index === 0) {
-      work.child = newFiber
+      fiber.child = newFiber
     } else {
       prevChild.sibling = newFiber
     }
@@ -87,12 +87,17 @@ function updateProps(props, dom) {
 }
 
 function performUnitOfWork(fiber) {
-  if(!fiber.dom) {
-    const dom = (fiber.dom = createDom(fiber.type))
-    updateProps(fiber.props, dom)
+  const isFunctionComponent = typeof fiber.type === 'function'
+
+  if(!isFunctionComponent) {
+    if(!fiber.dom) {
+      const dom = (fiber.dom = createDom(fiber.type))
+      updateProps(fiber.props, dom)
+    }
   }
+  const children = isFunctionComponent ? [fiber.type()]:  fiber.props.children
   // 3 转换tree为链表，设置好指针
-  initChildren(fiber)
+  initChildren(fiber, children)
 
   // 4 返回下一个要执行的任务
   if(fiber.child) {
