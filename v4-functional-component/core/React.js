@@ -49,7 +49,9 @@ function commitWork(fiber) {
   // 这里因为 counter 是一个函数组件，本身并不是work单元，没有fiber相关的dom，他直接返回的就是一个 vdom
   // 所以在这里通过向上查找的方式，通过parent并且有dom的情况来 append
   let fiberParent = fiber.parent
-  if(!fiberParent.dom) {
+
+  // 通过white来一直向上查找，处理函数组件嵌套的情况
+  while (!fiberParent.dom) {
     fiberParent = fiberParent.parent
   }
 
