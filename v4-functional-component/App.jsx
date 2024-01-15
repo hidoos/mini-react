@@ -1,18 +1,15 @@
 import React from "./core/React"
 
-function Counter () {
-  return <div>counter</div>
+function Counter ({num}) {
+  return <div>counter{num}</div>
 }
 
-function CounterContainer () {
-  return <Counter />
-}
 
 export const App = () => {
   return (
     <div id='app'>
       hello app
-      <CounterContainer />
+      <Counter num={10} />
     </div>
   )
 }

@@ -131,8 +131,8 @@
     },
     {
       "type": "text",
-      "version": 22,
-      "versionNonce": 227190086,
+      "version": 24,
+      "versionNonce": 564646721,
       "isDeleted": false,
       "id": "wORGGm4wqVa64x1DB8_PM",
       "fillStyle": "solid",
@@ -165,7 +165,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1705330038367,
+      "updated": 1705331222452,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -232,8 +232,8 @@
     },
     {
       "type": "text",
-      "version": 39,
-      "versionNonce": 1641134618,
+      "version": 41,
+      "versionNonce": 199408975,
       "isDeleted": false,
       "id": "56oiC5CpMqyj1DPOEX04V",
       "fillStyle": "solid",
@@ -258,7 +258,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1705330038368,
+      "updated": 1705331222452,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -455,8 +455,8 @@
     },
     {
       "type": "text",
-      "version": 11,
-      "versionNonce": 684854406,
+      "version": 13,
+      "versionNonce": 648921889,
       "isDeleted": false,
       "id": "V63Eqm3hTcjwtGm05Yv0S",
       "fillStyle": "solid",
@@ -485,7 +485,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1705330038368,
+      "updated": 1705331222453,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -552,8 +552,8 @@
     },
     {
       "type": "text",
-      "version": 31,
-      "versionNonce": 243754714,
+      "version": 33,
+      "versionNonce": 912014191,
       "isDeleted": false,
       "id": "-JnOZWKFbAvUsngxmn3O6",
       "fillStyle": "solid",
@@ -578,7 +578,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1705330038369,
+      "updated": 1705331222453,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -593,8 +593,8 @@
     },
     {
       "type": "text",
-      "version": 284,
-      "versionNonce": 220892102,
+      "version": 286,
+      "versionNonce": 422229761,
       "isDeleted": false,
       "id": "QM-cjHMplalAiXvLxwV68",
       "fillStyle": "solid",
@@ -614,7 +614,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1705330038369,
+      "updated": 1705331222456,
       "link": null,
       "locked": false,
       "fontSize": 20,

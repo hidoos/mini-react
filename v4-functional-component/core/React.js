@@ -14,7 +14,9 @@ const createElement = (type, props, ...children) => {
     props: {
       ...props,
       children: children.map(child => {
-        return typeof child === 'string' ? createTextNode(child): child
+        console.log(child) // 会发现这里 child 直接输入 10 了, 应该想办法把这里当作一个文本节点来处理
+        const isTextNode = typeof child === 'string' || typeof child === 'number'
+        return isTextNode ? createTextNode(child): child
       })
     }
   }
@@ -109,7 +111,7 @@ function performUnitOfWork(fiber) {
       updateProps(fiber.props, dom)
     }
   }
-  const children = isFunctionComponent ? [fiber.type()]:  fiber.props.children
+  const children = isFunctionComponent ? [fiber.type(fiber.props)]:  fiber.props.children
   // 3 转换tree为链表，设置好指针
   initChildren(fiber, children)
 
