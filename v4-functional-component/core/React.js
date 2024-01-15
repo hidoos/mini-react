@@ -45,7 +45,19 @@ function commitRoot() {
 
 function commitWork(fiber) {
   if(!fiber) return
-  fiber.parent.dom.append(fiber.dom) 
+
+  // 这里因为 counter 是一个函数组件，本身并不是work单元，没有fiber相关的dom，他直接返回的就是一个 vdom
+  // 所以在这里通过向上查找的方式，通过parent并且有dom的情况来 append
+  let fiberParent = fiber.parent
+  if(!fiberParent.dom) {
+    fiberParent = fiberParent.parent
+  }
+
+  // counter 函数组件 fiber，没有 dom，需要检测一下
+  if(fiber.dom) {
+    fiberParent.dom.append(fiber.dom) 
+  }
+
   commitWork(fiber.child)
   commitWork(fiber.sibling)
 }
