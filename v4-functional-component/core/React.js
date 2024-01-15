@@ -122,7 +122,12 @@ function performUnitOfWork(fiber) {
   if(fiber.sibling ) {
     return fiber.sibling
   }
-  return fiber.parent?.sibling
+
+  let nextFiber = fiber
+  while(nextFiber) {
+   if(nextFiber.sibling) return nextFiber.sibling
+   nextFiber = nextFiber.parent
+  }
 }
 
 

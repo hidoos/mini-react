@@ -10,6 +10,7 @@ export const App = () => {
     <div id='app'>
       hello app
       <Counter num={10} />
+      <Counter num={12} />
     </div>
   )
 }
