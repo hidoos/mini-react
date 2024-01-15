@@ -20,15 +20,34 @@ const createElement = (type, props, ...children) => {
   }
 }
 
-let newFiber = null
+let root = null
+let nextUnitOfWork = null
 function workLoop(deadline) {
   let shouldYield = false
-  while(!shouldYield && newFiber) {
+  while(!shouldYield && nextUnitOfWork) {
     // 执行完当前任务，需要返回下一个任务
-    newFiber = performUnitOfWork(newFiber)
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
     shouldYield = deadline.timeRemaining() < 1
   }
+
+  if(!nextUnitOfWork && root) {
+    // 1. 当前链表已经处理完
+    commitRoot()
+  }
+
   requestIdleCallback(workLoop)
+}
+
+function commitRoot() {
+  commitWork(root.child)
+  root = null
+}
+
+function commitWork(fiber) {
+  if(!fiber) return
+  fiber.parent.dom.append(fiber.dom) 
+  commitWork(fiber.child)
+  commitWork(fiber.sibling)
 }
 
 
@@ -70,10 +89,7 @@ function updateProps(props, dom) {
 function performUnitOfWork(fiber) {
   if(!fiber.dom) {
     const dom = (fiber.dom = createDom(fiber.type))
-    // 2 处理 props
-    // // 设置 props
     updateProps(fiber.props, dom)
-    fiber.parent.dom.append(dom)
   }
   // 3 转换tree为链表，设置好指针
   initChildren(fiber)
@@ -90,12 +106,14 @@ function performUnitOfWork(fiber) {
 
 
 const render = (el, container) => {
-  newFiber = {
+  nextUnitOfWork = {
     dom: container,
     props: {
       children: [el]
     }
   }
+
+  root = nextUnitOfWork
 }
 
 requestIdleCallback(workLoop)
