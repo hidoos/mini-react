@@ -22,24 +22,8 @@ const createElement = (type, props, ...children) => {
   }
 }
 
+
 let root = null
-let nextUnitOfWork = null
-function workLoop(deadline) {
-  let shouldYield = false
-  while (!shouldYield && nextUnitOfWork) {
-    // 执行完当前任务，需要返回下一个任务
-    nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
-    shouldYield = deadline.timeRemaining() < 1
-  }
-
-  if (!nextUnitOfWork && root) {
-    // 1. 当前链表已经处理完
-    commitRoot()
-  }
-
-  requestIdleCallback(workLoop)
-}
-
 function commitRoot() {
   commitWork(root.child)
   root = null
@@ -67,11 +51,52 @@ function commitWork(fiber) {
 }
 
 
+
+
+
 function createDom(type) {
   // console.log('type', type); 
   return type === 'TEXT_ELEMENT'
     ? document.createTextNode('')
     : document.createElement(type)
+}
+
+function updateProps(props, dom) {
+  Object.keys(props).forEach(key => {
+    if (key !== 'children') {
+      dom[key] = props[key]
+    }
+  })
+}
+
+/**
+ * 返回下一个要执行的任务
+ * @param {*} fiber 
+ * @returns 
+ */
+function getNextFiber(fiber) {
+  if (fiber.child) {
+    return fiber.child
+  }
+  if (fiber.sibling) {
+    return fiber.sibling
+  }
+
+  let nextFiber = fiber
+  while (nextFiber) {
+    if (nextFiber.sibling) return nextFiber.sibling
+    nextFiber = nextFiber.parent
+  }
+}
+
+function performUnitOfWork(fiber) {
+  const isFunctionComponent = typeof fiber.type === 'function'
+  if (!isFunctionComponent) {
+    updateHostComponent(fiber)
+  } else {
+    updateFunctionComponent(fiber)
+  }
+  return getNextFiber(fiber) 
 }
 
 function initChildren(fiber, children) {
@@ -94,14 +119,6 @@ function initChildren(fiber, children) {
   })
 }
 
-function updateProps(props, dom) {
-  Object.keys(props).forEach(key => {
-    if (key !== 'children') {
-      dom[key] = props[key]
-    }
-  })
-}
-
 function updateFunctionComponent(fiber) {
   const children = [fiber.type(fiber.props)]
   // 3 转换tree为链表，设置好指针
@@ -118,34 +135,6 @@ function updateHostComponent(fiber) {
   initChildren(fiber, children)
 }
 
-function performUnitOfWork(fiber) {
-  const isFunctionComponent = typeof fiber.type === 'function'
-
-  if (!isFunctionComponent) {
-    updateHostComponent(fiber)
-  } else {
-    updateFunctionComponent(fiber)
-  }
-
-  const children = isFunctionComponent ? [fiber.type(fiber.props)] : fiber.props.children
-  // 3 转换tree为链表，设置好指针
-  initChildren(fiber, children)
-
-  // 4 返回下一个要执行的任务
-  if (fiber.child) {
-    return fiber.child
-  }
-  if (fiber.sibling) {
-    return fiber.sibling
-  }
-
-  let nextFiber = fiber
-  while (nextFiber) {
-    if (nextFiber.sibling) return nextFiber.sibling
-    nextFiber = nextFiber.parent
-  }
-}
-
 
 const render = (el, container) => {
   nextUnitOfWork = {
@@ -154,8 +143,25 @@ const render = (el, container) => {
       children: [el]
     }
   }
-
   root = nextUnitOfWork
+}
+
+
+let nextUnitOfWork = null
+function workLoop(deadline) {
+  let shouldYield = false
+  while (!shouldYield && nextUnitOfWork) {
+    // 执行完当前任务，需要返回下一个任务
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
+    shouldYield = deadline.timeRemaining() < 1
+  }
+
+  if (!nextUnitOfWork && root) {
+    // 1. 当前链表已经处理完
+    commitRoot()
+  }
+
+  requestIdleCallback(workLoop)
 }
 
 requestIdleCallback(workLoop)
@@ -166,5 +172,3 @@ const React = {
 }
 
 export default React
-
-
