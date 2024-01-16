@@ -78,10 +78,6 @@ function getNextFiber(fiber) {
   if (fiber.child) {
     return fiber.child
   }
-  if (fiber.sibling) {
-    return fiber.sibling
-  }
-
   let nextFiber = fiber
   while (nextFiber) {
     if (nextFiber.sibling) return nextFiber.sibling
